@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://dcqtjs8chbjcf"]
+
+[ext_resource type="Script" path="res://addons/console/ui/console.gd" id="1_dmpjr"]
+
+[node name="ConsoleUI" type="CanvasLayer"]
+layer = 128
+script = ExtResource("1_dmpjr")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.4
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel"]
+clip_contents = false
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_right = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 20
+scroll_following = true
+
+[node name="LineEdit" type="LineEdit" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_right = -2.0
+offset_bottom = 31.0
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Enter Command..."
+caret_blink = true
+caret_force_displayed = true
+
+[node name="SuggestionScrollContainer" type="ScrollContainer" parent="."]
+clip_contents = false
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.4
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SuggestionLabel" type="RichTextLabel" parent="SuggestionScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 20
