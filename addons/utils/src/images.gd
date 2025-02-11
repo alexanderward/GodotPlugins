@@ -1,24 +1,37 @@
 extends Node
 
 """
-Able to resize a sprite and an array of nodes that will find all recursive collision shapes and scale to image
-Utils.image.resize_animated_sprite(sprite, Vector2(16, 16), [collision_shape])
+Scales an AnimatedSprite2D or Sprite2D along with all its associated collision shapes
+inside a given list of parent nodes.
+Example Usage:
+Utils.image.resize_animated_sprite(sprite, Vector2(16, 16), [collision_shape_parent])
 """
 
 func resize_animated_sprite(sprite: Node2D, new_size: Vector2, parent_nodes: Array[Node]):
-	# Resize the sprite
+	# Debug mode (set to true if you want visual debug polygons)
 	var debug = System.env.get_default("COLLISION_FRAMES_DEBUG", false)
+
+	# ✅ Get the original size of the sprite
+	var original_size = Vector2.ZERO
 	if sprite is Sprite2D:
-		var original_size = sprite.texture.get_size()
-		sprite.scale = new_size / original_size
-		
+		original_size = sprite.texture.get_size()
 	elif sprite is AnimatedSprite2D:
 		var frames = sprite.sprite_frames
 		if frames and frames.has_animation(sprite.animation):
 			var texture = frames.get_frame_texture(sprite.animation, 0)
 			if texture:
-				var original_size = texture.get_size()
-				sprite.scale = new_size / original_size
+				original_size = texture.get_size()
+
+	# If no valid texture, exit
+	if original_size == Vector2.ZERO:
+		print("❌ Error: Sprite has no valid texture!")
+		return
+	
+	# ✅ Calculate the scale factor
+	var scale_factor = new_size / original_size
+
+	# ✅ Apply scale to the sprite
+	sprite.scale = scale_factor
 
 	# ✅ Automatically find all CollisionShape2D nodes under each parent node
 	var collision_shapes: Array[CollisionShape2D] = []
@@ -26,38 +39,45 @@ func resize_animated_sprite(sprite: Node2D, new_size: Vector2, parent_nodes: Arr
 		_find_collision_shapes(parent_node, collision_shapes)  # Collect all collision shapes
 
 	# ✅ Apply scaling to each found CollisionShape2D
-	var scale_factor = sprite.scale  # Get the correct scale
-
 	for collision_shape in collision_shapes:
 		if collision_shape.shape:
 			var shape = collision_shape.shape.duplicate()  # Duplicate to avoid modifying the original resource
 
-			# Reset collision shape position to avoid offset scaling issues
-			collision_shape.position = Vector2.ZERO  
+			# ✅ Store the original LOCAL position before scaling
+			var original_position = collision_shape.position
 
-			# Scale different shape types correctly
+			# ✅ Scale different shape types correctly
+			var y_correction = 0.0
+			var x_correction = 0.0
 			if shape is RectangleShape2D:
-				shape.size *= scale_factor  
+				shape.size *= scale_factor
+				x_correction = (shape.size.x * (scale_factor.x - 1)) / 2
+				y_correction = (shape.size.y * (scale_factor.y - 1)) / 2  # Fix Y misalignment
 			elif shape is CapsuleShape2D:
 				shape.radius *= scale_factor.x
 				shape.height *= scale_factor.y
+				x_correction = (shape.radius * (scale_factor.x - 1)) / 2
+				y_correction = (shape.height * (scale_factor.y - 1)) / 2  # Fix Y misalignment
 			elif shape is CircleShape2D:
 				shape.radius *= scale_factor.x
+				x_correction = (shape.radius * (scale_factor.x - 1)) / 2
+				y_correction = (shape.radius * (scale_factor.y - 1)) / 2
 			elif shape is CollisionPolygon2D:
 				var new_polygon = []
 				for point in shape.polygon:
 					new_polygon.append(point * scale_factor)
 				shape.polygon = new_polygon
 
-			# Apply the modified shape
+			# ✅ Apply the modified shape
 			collision_shape.shape = shape
-			
-			# Restore the original offset after scaling (prevents weird shifts)
-			collision_shape.position *= scale_factor
+
+			# ✅ FINAL FIX: Properly align to the **sprite's center**
+			collision_shape.position = (original_position * scale_factor) + Vector2(0, y_correction)
 
 			# ✅ If debug mode is on, create a blue Polygon2D overlay
 			if debug:
 				_add_debug_overlay(collision_shape)
+
 
 # 🔍 Recursive function to find all CollisionShape2D nodes inside a given parent node
 func _find_collision_shapes(node: Node, results: Array[CollisionShape2D]):

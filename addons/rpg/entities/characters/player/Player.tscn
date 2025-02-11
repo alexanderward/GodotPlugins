@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddvbgqr36ageo"]
+
+[ext_resource type="Script" path="res://addons/rpg/entities/characters/player/Player.gd" id="1_ej7rj"]
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_ej7rj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="Hitbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+
+[node name="HealthRegenTimer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[node name="ManaRegenTimer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true

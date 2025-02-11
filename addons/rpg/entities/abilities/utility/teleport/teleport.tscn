@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxbe5eds3nouv"]
+
+[ext_resource type="Script" path="res://addons/rpg/entities/abilities/utility/teleport/teleport.gd" id="1_1y022"]
+
+[node name="Teleport" type="Node2D"]
+script = ExtResource("1_1y022")
+teleport_distance = 100.0
+ability_name = null
+ability_type = null
+schools = null
+category = null
+max_range = null
+cooldown_time = 0.0
+cast_time = null
+channel_duration = null
+cast_while_moving = null
+can_be_buffered = null
+max_charges = null
+charge_replenish_time = 0.0
+base_damage = null
+damage_variance = null
+scaling = null
+crit_chance = null
+crit_multiplier = null
+mana_cost = null
+interruptible = null
+pushback_factor = null
+max_pushback = null

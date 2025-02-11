@@ -524,5 +524,6 @@ func _load_history():
 	var config = ConfigFile.new()
 	if config.load(HISTORY_FILE) == OK:
 		history.clear()
-		for key in config.get_section_keys("history"):
-			history.append(config.get_value("history", key))
+		if config.has_section("history"):
+			for key in config.get_section_keys("history"):
+				history.append(config.get_value("history", key))
